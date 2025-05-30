@@ -31,10 +31,11 @@ class TestBooksCollector:
         ('О' * 40, True),
         ('О' * 41, False)
     ])
-    def test_add_new_book_parameters(self, name, expected):
+    def test_add_new_book_validation(self, name, expected):
         collector = BooksCollector()
         collector.add_new_book(name)
         assert (name in collector.get_books_genre())== expected
+
 
     @pytest.mark.parametrize('book, genre, expected', [
         ('Оно', 'Ужасы', True),
@@ -52,23 +53,18 @@ class TestBooksCollector:
         else:
             assert collector.get_book_genre(book) == ''
 
-    @pytest.mark.parametrize('book, genre, expected_result', [
-        ('Война и мир', 'Роман', False),
-        ('Преступление и наказание', 'Детективы', True),
-        ('Гарри Поттер', 'Фэнтези', False),
-        ('Мастер и Маргарита', 'Роман', False),
-        ('Неизвестная книга', None, False)
-    ])
-    def test_get_book_genre_boolean(self, book, genre, expected_result):
+
+    def test_get_book_genre_for_non_existing_book(self):
         collector = BooksCollector()
+        assert collector.get_book_genre('Несуществующая книга') is None
 
-        if book != 'Неизвестная книга':
-            collector.add_new_book(book)
-            if genre:
-                collector.set_book_genre(book, genre)
 
-        result = collector.get_book_genre(book) not in (None, '')
-        assert result == expected_result
+    def test_get_book_genre_for_existing_book(self):
+        collector = BooksCollector()
+        collector.add_new_book('1984')
+        collector.set_book_genre('1984', 'Фантастика')
+        assert collector.get_book_genre('1984') == 'Фантастика'
+
 
     @pytest.mark.parametrize("books, genre, expected", [
         (
@@ -113,6 +109,7 @@ class TestBooksCollector:
         collector.set_book_genre('Книга', genre)
         assert ('Книга' in collector.get_books_for_children()) == expected_children
 
+
     @pytest.mark.parametrize('book, expected', [
         ('Существующая книга', True),
         ('Новая книга', False),
@@ -126,20 +123,13 @@ class TestBooksCollector:
         assert (book in collector.get_list_of_favorites_books()) == expected
 
 
-    def test_cant_add_duplicate_book(ыуда):
+    def test_cant_add_duplicate_book(self):
         collector = BooksCollector()
         collector.add_new_book('1984')
         collector.add_new_book('1984')
         assert len(collector.get_books_genre()) == 1
 
 
-    def test_get_books_by_genre(self):
-        collector = BooksCollector()
-        collector.add_new_book('Оно')
-        collector.add_new_book('Шерлок Холмс')
-        collector.set_book_genre('Оно', 'Ужасы')
-        collector.set_book_genre('Шерлок Холмс', 'Детективы')
-        assert collector.get_books_with_specific_genre('Ужасы') == ['Оно']
 
     def test_remove_from_favorites(self):
         collector = BooksCollector()
@@ -147,3 +137,4 @@ class TestBooksCollector:
         collector.add_book_in_favorites('Преступление и наказание')
         collector.delete_book_from_favorites('Преступление и наказание')
         assert 'Преступление и наказание' not in collector.get_list_of_favorites_books()
+
