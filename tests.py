@@ -71,7 +71,6 @@ class TestBooksCollector:
         collector.add_new_book('Книга без жанра')
         assert collector.get_book_genre('Книга без жанра') == ''
 
-#def test_get_books_genre_returns_all_books(self):
 
     @pytest.mark.parametrize("books, genre, expected", [
         (
