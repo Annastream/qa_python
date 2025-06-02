@@ -54,17 +54,24 @@ class TestBooksCollector:
             assert collector.get_book_genre(book) == ''
 
 
+
+    def test_get_book_genre_returns_assigned_value(self):
+        collector = BooksCollector()
+        collector.add_new_book('1984')
+        collector.books_genre = {'1984': 'Антиутопия'}
+        assert collector.get_book_genre('1984') == 'Антиутопия'
+
     def test_get_book_genre_for_non_existing_book(self):
         collector = BooksCollector()
         assert collector.get_book_genre('Несуществующая книга') is None
 
 
-    def test_get_book_genre_for_existing_book(self):
+    def test_get_book_genre_when_genre_not_set(self):
         collector = BooksCollector()
-        collector.add_new_book('1984')
-        collector.set_book_genre('1984', 'Фантастика')
-        assert collector.get_book_genre('1984') == 'Фантастика'
+        collector.add_new_book('Книга без жанра')
+        assert collector.get_book_genre('Книга без жанра') == ''
 
+#def test_get_books_genre_returns_all_books(self):
 
     @pytest.mark.parametrize("books, genre, expected", [
         (
@@ -130,7 +137,6 @@ class TestBooksCollector:
         assert len(collector.get_books_genre()) == 1
 
 
-
     def test_remove_from_favorites(self):
         collector = BooksCollector()
         collector.add_new_book('Преступление и наказание')
@@ -138,3 +144,24 @@ class TestBooksCollector:
         collector.delete_book_from_favorites('Преступление и наказание')
         assert 'Преступление и наказание' not in collector.get_list_of_favorites_books()
 
+
+    def test_get_favorites_list_initial_state(self):
+        collector = BooksCollector()
+        assert collector.get_list_of_favorites_books() == []
+
+
+    def test_get_favorites_list_after_adding_books(self):
+        collector = BooksCollector()
+        collector.add_new_book('Книга 1')
+        collector.add_new_book('Книга 2')
+        collector.add_book_in_favorites('Книга 1')
+        collector.add_book_in_favorites('Книга 2')
+        assert len(collector.get_list_of_favorites_books()) == 2
+
+
+    def test_get_favorites_list_no_duplicates(self):
+        collector = BooksCollector()
+        collector.add_new_book('Книга 1')
+        collector.add_book_in_favorites('Книга 1')
+        collector.add_book_in_favorites('Книга 1')
+        assert collector.get_list_of_favorites_books() == ['Книга 1']
